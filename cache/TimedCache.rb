@@ -15,11 +15,11 @@ require_relative '../helpers/FileLogger'
     @loadCount    = 0
     @secLoaded    = Time.now().to_i
     @listAll      = nil
-    @force        = false
+    @forceReload  = false
  end
  
  def forceLoad
-   @force = true
+   @forceReload = true
    puts "forceLoad:#{@name} num-loads:#{@loadCount} times-used:#{@cacheCount}"
  end
  
@@ -27,18 +27,18 @@ require_relative '../helpers/FileLogger'
  def mustLoad?
    secNow = Time.now().to_i
    nSec   = secNow - @secLoaded
-   @force || @listAll == nil || nSec >= @cacheSeconds
+   @forceReload || (@listAll == nil) || (nSec >= @cacheSeconds)
  end
 
  def getAll
    if mustLoad? 
      puts "Reloading #@name Cache" if @@traces
-     @listAll   = abs_getListAll
-     @secLoaded = Time.now().to_i    
-     @force     = false
+     @listAll     = abs_getListAll
+     @secLoaded   = Time.now().to_i    
+     @forceReload = false
      @loadCount += 1
      puts "#{@name} Load Count=#{@loadCount}, # Items=#{@listAll.size}" if @@traces
-  end
+   end
    @cacheCount += 1
    @listAll
  end

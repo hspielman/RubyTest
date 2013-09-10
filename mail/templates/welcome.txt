@@ -1,0 +1,8 @@
+WELCOME. This is a plain text template.
+
+Here we replace our first param 'name' <%= @tmap[:name] %>.
+Here we replace our second param 'date' <%= @tmap[:date] %>.
+Here we use a value NOT in the map 'qasw' <%= @tmap[:qasw] %>.
+ * Note that there is no replacement made, but also no ERROR.
+
+This is the end.

@@ -20,7 +20,7 @@ include Singleton
             end
          end
       end
-   end
+  end
 
    def getMap 
       @nameMap

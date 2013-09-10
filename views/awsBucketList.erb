@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<head>
+<meta charset="utf-8">
+<title>List AWS Buckets</title>
+</head>
+<%
+   # See:  http://docs.aws.amazon.com/AWSRubySDK/latest/AWS/S3.html
+   require 'aws-sdk' 
+
+   bktName  = params[:bucket]
+	fileName = params[:filename]
+   exec    = "Upload" == params[:submit]
+
+   akCache = AppKeys.instance       
+   keyObj  = akCache.getObject('aws') 
+		
+   s3 = AWS::S3.new(
+         :access_key_id     => keyObj.appKey,
+         :secret_access_key => keyObj.appSecret )
+							
+	msg = "Select target bucket and a local file to upload to S3"						
+	if exec 
+	  begin
+	     parts   = fileName.strip.split("/") 
+		  objname = parts[-1]
+		  
+		  # Get s3 bucket and "file" object within it
+		  up_bucket = s3.buckets[bktName] 
+		  up_object = up_bucket.objects[objname]
+	
+		  # streaming upload a file to S3
+		  up_object.write(Pathname.new(fileName))
+		  msg = "Created #{bktName} : #{objname} "
+		  
+	  rescue => ex
+	     msg = ex.to_s
+	  end
+	end
+							
+   o_selected = " selected "
+%>
+
+<body>
+ <h2>AWS Buckets</h2>
+ 
+ <form action="awsBucketList.htm" method="get" name="form1" id="form1">
+ 
+ <p>Select an S3 bucket</p>
+  <select name="bucket" id="bucket">
+<%  s3.buckets.each do |bkt|  %>
+    <option value="<%= bkt.name %>" <%= bkt.name == bktName ? o_selected : "" %> ><%= bkt.name %></option>
+<%  end   %> 
+  </select>
+
+  <p>Select a file to upload</p>
+  <p>
+     <select name="filename" id="filename">
+<%  Dir["/temp/*.*"].each do |file|  %>
+    <option value="<%= file %>" ><%= file %></option>
+<%  end   %> 
+
+     </select>
+  </p>
+  <p>
+     <input type="submit" name="submit" id="submit" value="Upload">
+  </p>
+ 
+ </form>
+ 
+ <p><%= msg %></p>
+ 
+
+</body>
+
+</html>

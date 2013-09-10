@@ -69,7 +69,7 @@ class DBReport
 		    arr[idx] = self.map_row(row)
 		    idx += 1
 		  end    
-     rescue => ex
+    rescue => ex
         log = FileLogger.new("DBReport")
         log.error "Error during execute: #{sqlStmt}"
         log.error "#{ex.class} #{ex.message}"
@@ -77,8 +77,8 @@ class DBReport
     ensure
         stmt.close if stmt
 		  con.close  if con
-     end    
-     return arr  
+    end    
+    return arr  
  end
  
  def self.list_by_id(active)
@@ -197,11 +197,6 @@ class DBReport
    end
    
    return exec_stmt    
- end
- 
- def execute(parm_vals)
-   stmt = executable_statement(parm_vals)
-   
  end
  
  

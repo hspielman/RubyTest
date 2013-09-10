@@ -4,6 +4,9 @@ module CacheInit
       classes = ['AppKeys','SystemProperties','USStates']
       nLoads = 0
       nErrs  = 0
+		
+		ObjectSpace.garbage_collect
+		
       classes.each do |className| 
         # Get just the class name from the file name
 
@@ -25,6 +28,8 @@ module CacheInit
         
       end
       
+		puts ObjectSpace.count_objects.to_s
+		
       " Reloads Forced:#{nLoads}  Errors:#{nErrs}"
    end
 

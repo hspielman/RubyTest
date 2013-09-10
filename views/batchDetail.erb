@@ -19,7 +19,7 @@
      bjExec   = BatchJobExec.new
 	  outLines = Array.new
      bjExec.execute(job, outLines, false, true)
-	  outLines.each { |line| result += (line + "<br/>") }
+	  outLines.each { |line| result += (html_escape(line) + "<br/>") }
      job    = BatchJob.get_by_id(id)  
    end
 %>
@@ -60,7 +60,7 @@
      </table>
   </form>
 
-  <p><%= result %></p>
+  <p><code><%= result %></code></p>
 </body>
 
 </html>

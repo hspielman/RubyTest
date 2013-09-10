@@ -1,6 +1,7 @@
 require_relative '../mail/MailFactory'
 require_relative '../cache/LocalProperties'
 require_relative '../helpers/DBUtil'
+require 'erb'
 
 class BatchJobExec
 
@@ -29,7 +30,7 @@ class BatchJobExec
    logger.info("  #{bj.command}")          
    
    begin
-      out_lines.push ("Job #{bj.id} #{@name} : #{bj.command}\n")
+      out_lines.push("Job #{bj.id} #{@name} : #{bj.command}\n")
       
       if bj.isDBReport?
          # Run a DB Report

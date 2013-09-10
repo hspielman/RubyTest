@@ -4,29 +4,96 @@
 <title>MAIL Test</title>
 </head>
 <%
-   service = params[:mail]
+   to      = Parse.get_string(params[:to]     , "") 
+   subj    = Parse.get_string(params[:subj]   , "Test Email") 
+   txtBody = Parse.get_string(params[:txtBody], "") 
+   htmBody = Parse.get_string(params[:htmBody], "") 
+	
+	template = Parse.get_string(params[:template], "")
+	if ( template.length > 0 )
+	  fname = "/RubyTest/mail/templates/#{template}.txt"
+	  t     = Template.new
+	  begin
+	    t.load_file(fname) 
+		 t_map = { :name => "Player", :date => "Wednesday" }
+		 txtBody = t.evaluate(t_map)
+	  rescue => ex 
+	    txtBody = ex.to_s
+	  end
+	end
+	
+	
+   send   = "Send" == params[:submit]
+	result = ""
+
+   service = params[:mailsvc]
    if service == nil
      mailer  = MailFactory.getDefaultMailer
    else
      mailer  = MailFactory.getMailer(service)
    end
    
-   recipient = params[:to]
-   recipient = "hspielman@gmail.com" if recipient == nil
-
-   subj = params[:subj]
-   subj = "THIS IS A TEST" if subj == nil
-   
-   txtBody = "this is a plain text body"
-   htmBody = "And <b>this</b> is an HTML body"
-   
-   success = mailer.sendIt(recipient, subj, txtBody, htmBody)
-   message = success ? "Did it work OK?" : " ** ERROR sending email ** "
+   to      = "hspielman@gmail.com" if (to == nil || to.length == 0)
+   message = "Complete form and hit Send"
+	
+	if send     
+     success = mailer.sendIt(to, subj, txtBody, htmBody)
+     message = success ? "Did it work OK?" : " ** ERROR sending email ** "
+	end
+	
 %>
 
 <body>
-  Send Email to: <%= recipient %><br />
-  <%= message %>
+  <h2>Send Test Email</h2>
+  <form action="testMail.htm" method="get" name="form1" id="form1">
+  <table width="706">
+    <tr>
+     <td width="109">Recipient</td>
+     <td width="585" >
+        <input name="to" type="text" id="to" value="<%= to %>" size="45"></td>
+    </tr>
+    <tr>
+     <td>Subject</td>
+     <td><label for="subj"></label>
+        <input name="subj" type="text" id="subj" value="<%= subj %>" size="45"></td>
+    </tr>
+    <tr>
+       <td>Service</td>
+       <td>
+          <select name="mailsvc" id="mailsvc">
+             <option selected>default</option>
+             <option value="sendgrid">sendgrid</option>
+             <option value="smtp">smtp</option>
+         </select></td>
+    </tr>
+    <tr>
+     <td>Template</td>
+     <td>
+        <select name="template" id="template">
+           <option value="" selected>none</option>
+           <option value="welcome">welcome</option>
+        </select>
+        <input type="submit" name="evaluate" id="evaluate" value="Evaluate"></td>
+    </tr>
+    
+    <tr>
+     <td>TXT Body</td>
+     <td>
+        <textarea name="txtBody" id="txtBody" cols="65" rows="5"><%= txtBody %></textarea></td>
+    </tr>
+    <tr>
+     <td>HTM Body</td>
+     <td>
+        <textarea name="htmBody" id="htmBody" cols="65" rows="5"><%= htmBody %></textarea></td>
+    </tr>
+    <tr>
+     <td></td>
+     <td> 
+        <input type="submit" name="submit" id="submit" value="Send"></td>
+    </tr> 
+   </table>
+  </form>
+  <p> <%= message %> </p>
 </body>
 
 </html>

@@ -34,7 +34,12 @@ end
 def getKey(name,defaultValue)
   getAll
   prop = @nameMap[name.to_sym]
-  prop == nil ? defaultValue : prop.value
+  prop == nil ? defaultValue : prop.appKey
+end
+
+def getObject(name)
+  getAll
+  @nameMap[name.to_sym]
 end
 
 end

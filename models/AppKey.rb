@@ -4,6 +4,9 @@ require_relative '../helpers/DBUtil'
 
 class AppKey 
 
+ SELECT_COLS  = "SELECT id,env,name,  appID,appKey,appSecret,appToken  
+                 FROM app_key ak "
+
  def self.load_for_env
    
    lcCache   = LocalProperties.instance
@@ -11,15 +14,21 @@ class AppKey
    arr = Array.new
 	idx = 0 
 	begin    
-		con = DBUtil.get_connection
-		rs  = con.query "SELECT id,env,name,value FROM app_key where env IN ( '#{appEnv}', 'all') ORDER BY name,env;"
+		con  = DBUtil.get_connection
+		stmt = self::SELECT_COLS + " where env IN ( '#{appEnv}', 'all') ORDER BY name,env;"
+		rs  = con.query stmt
 		
 		rs.each do |row|
 		  prop = AppKey.new
 		  prop.id          = row[0].to_i
 		  prop.env         = row[1]
 		  prop.name        = row[2]
-		  prop.value       = row[3]
+		  
+		  prop.appID       = row[3]
+		  prop.appKey      = row[4]
+		  prop.appSecret   = row[5]
+		  prop.appToken    = row[6]
+		  
 		  arr[idx] = prop                   
 		  idx += 1
 		end    
@@ -40,13 +49,18 @@ class AppKey
    @id          = -1 
    @env         = 'all'
    @name        = "" 
-   @value       = ""
+	
+   @appID      = ""
+	@appKey     = ""
+	@appSecret  = ""
+	@appToken   = ""
+	
  end
 
- attr_accessor  :id, :env, :name, :value
+ attr_accessor  :id, :env, :name,  :appID, :appKey, :appSecret, :appToken
   
  def to_s  
-   "name: #@name  value: #@value"
+   "name: #@name  appID: #@appID"
  end
 
  

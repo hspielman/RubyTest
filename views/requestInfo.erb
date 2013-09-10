@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<head>
+<meta charset="utf-8">
+<title>Ruby Test</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2, user-scalable=1" /> 
+</head>
+<%
+   prCache = SystemProperties.instance
+%>
+
+<body>
+  <h2>Request Info</h2>
+  
+  <p>Dump Properties: request.env.each </p>
+  <code>
+<%  request.env.each do |k,v|  %> 
+  <b><%= k.to_s %></b> = <%= v.to_s  %> <br /> 
+<%  end   %>
+  </code>
+
+  <p>Dump Methods: request.XXX  </p>
+
+  <code>
+        <b>request.accept</b>              = <%= request.accept       %>
+  <br /><b>request.accept? 'text/xml'</b>  = <%= request.accept? 'text/xml' %>
+  <br /><b>request.preferred_type(t)</b>   = <%= "How to use this??  What is 't'?"  %>
+  <br /><b>request.body</b>                = <%= request.body    %>
+  <br /><b>request.scheme </b>             = <%= request.scheme   %>
+  <br /><b>request.script_name</b>         = <%= request.script_name   %>
+  <br /><b>request.path_info</b>           = <%= request.path_info     %>
+  <br /><b>request.port</b>                = <%= request.port    %>
+  <br /><b>request.request_method</b>      = <%= request.request_method   %>
+  <br /><b>request.query_string</b>        = <%= request.query_string  %>
+  <br /><b>request.content_length</b>      = <%= request.content_length     %>
+  <br /><b>request.media_type</b>          = <%= request.media_type  %>
+  <br /><b>request.host</b>                = <%= request.host   %>
+  <br /><b>request.get?</b>                = <%= request.get?     %>
+  <br /><b>request.form_data?</b>          = <%= request.form_data? %>
+  <br /><b>request["p1"]</b>               = <%= request["p1"]     %>
+  <br /><b>request["p99"]</b>              = <%= request["p99"]      %>
+  <br /><b>request.referrer</b>            = <%= request.referrer    %>
+  <br /><b>request.user_agent</b>          = <%= request.user_agent  %>
+  <br /><b>request.cookies</b>             = <%= request.cookies   %>
+  <br /><b>request.xhr?</b>                = <%= request.xhr?   %>
+  <br /><b>request.url</b>                 = <%= request.url        %>
+  <br /><b>request.path</b>                = <%= request.path       %>
+  <br /><b>request.ip</b>                  = <%= request.ip        %>
+  <br /><b>request.secure?</b>             = <%= request.secure?    %>
+  <br /><b>request.forwarded?</b>          = <%= request.forwarded?    %>
+  </code>
+
+</body>
+
+</html>

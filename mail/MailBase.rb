@@ -6,9 +6,9 @@ class MailBase
 
     def initialize(service)
        @sysProps = SystemProperties.instance       
-       @service = service
-       @trace   = true 
-       @log     = FileLogger.new(service)
+       @service  = service
+       @trace    = true 
+       @log      = FileLogger.new(service)
     end
     
     def sendIt ( p_recipient, p_subject, txtBody, htmBody )

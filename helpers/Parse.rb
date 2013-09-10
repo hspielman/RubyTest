@@ -9,7 +9,7 @@ module Parse
          useDefault = true 
        end
        iVal = useDefault ? default : val
-     rescue => ex
+     rescue 
        iVal = default
      end
      return iVal.to_i
@@ -28,7 +28,7 @@ module Parse
      return fVal.to_f
    end
 
-    def self.get_string(val, default)
+   def self.get_string(val, default)
      begin
        useDefault = (val == nil)
        if (!useDefault) && (val.instance_of? String) && (val.length == 0) 

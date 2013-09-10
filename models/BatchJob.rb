@@ -66,15 +66,15 @@ class BatchJob
    self.get_list(active ? BatchJob::WHERE_ACTIVE : "", BatchJob::ID_ORDER)
  end
  
-  def self.list_all_by_exec(active)
+ def self.list_all_by_exec(active)
    self.get_list(active ? BatchJob::WHERE_ACTIVE : "", BatchJob::EXEC_ORDER)
  end
  
-  def self.list_ready
+ def self.list_ready
    self.get_list(BatchJob::WHERE_READY, BatchJob::EXEC_ORDER)
  end
  
-  def self.get_by_id(id)
+ def self.get_by_id(id)
    theList = self.get_list(BatchJob::BY_ID, BatchJob::ID_ORDER, id)
    theObj  = if theList.size < 1 then nil else theList[0] end   
    return theObj
