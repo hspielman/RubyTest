@@ -1,0 +1,35 @@
+# Logfile created on 2013-08-30 13:19:53 -0700 by logger.rb/31641
+I, [2013-09-08 07:41:06#3616]  INFO -- : ** OPEN log file - maxSize=1000000, maxGen=4
+I, [2013-09-08 07:42:40#5776]  INFO -- : ** OPEN log file - maxSize=1000000, maxGen=4
+I, [2013-09-08 07:43:20#760]  INFO -- : ** OPEN log file - maxSize=1000000, maxGen=4
+I, [2013-09-08 07:43:32#7452]  INFO -- : ** OPEN log file - maxSize=1000000, maxGen=4
+I, [2013-09-08 07:43:53#7340]  INFO -- : ** OPEN log file - maxSize=1000000, maxGen=4
+I, [2013-09-08 07:47:21#7584]  INFO -- : ** OPEN log file - maxSize=1000000, maxGen=4
+I, [2013-09-08 07:48:26#8848]  INFO -- : ** OPEN log file - maxSize=1000000, maxGen=4
+I, [2013-09-08 07:50:49#8132]  INFO -- : ** OPEN log file - maxSize=1000000, maxGen=4
+I, [2013-09-08 07:51:06#8132]  INFO -- : BatchExec * Job 1 Manual Exec = [app] Verify Batch Scheduler  ** Starting **
+I, [2013-09-08 07:51:06#8132]  INFO -- : BatchExec *   VerifyBatch -p1:1 -p2:2
+I, [2013-09-08 07:51:06#8132]  INFO -- : BatchExec * Job 1 Complete, status=2
+I, [2013-09-08 07:57:18#4292]  INFO -- : ** OPEN log file - maxSize=1000000, maxGen=4
+I, [2013-09-08 07:58:52#4292]  INFO -- : BatchExec * Job 1 Manual Exec = [app] Verify Batch Scheduler  ** Starting **
+I, [2013-09-08 07:58:52#4292]  INFO -- : BatchExec *   VerifyBatch -p1:1 -p2:2
+I, [2013-09-08 07:58:52#4292]  INFO -- : BatchExec * Job 1 Complete, status=2
+I, [2013-09-08 08:03:17#7528]  INFO -- : ** OPEN log file - maxSize=1000000, maxGen=4
+I, [2013-09-08 08:03:24#7528]  INFO -- : SystemProperties * Loaded 36 props - cache time is 300 seconds
+I, [2013-09-08 08:15:08#7908]  INFO -- : ** OPEN log file - maxSize=1000000, maxGen=4
+I, [2013-09-08 08:42:43#6372]  INFO -- : ** OPEN log file - maxSize=1000000, maxGen=4
+I, [2013-09-08 08:45:18#6372]  INFO -- : SystemProperties * Loaded 36 props - cache time is 300 seconds
+I, [2013-09-08 08:45:43#6372]  INFO -- : BatchExec * Job 5 Manual Exec = [dbReport] DB INFO: PROCESS  ** Starting **
+I, [2013-09-08 08:45:43#6372]  INFO -- : BatchExec *   SHOW PROCESSLIST;
+I, [2013-09-08 08:45:43#6372]  INFO -- : DBUtil * Exec Query: SHOW PROCESSLIST; 
+I, [2013-09-08 08:45:43#6372]  INFO -- : BatchExec * Job 5 Complete, status=1
+I, [2013-09-08 08:45:58#6372]  INFO -- : BatchExec * Job 7 Manual Exec = [dbUpdate] Purge App Metrics to 45 days  ** Starting **
+I, [2013-09-08 08:45:58#6372]  INFO -- : BatchExec *   DELETE from metrics.appmetrics where endTsp < DATE_SUB(now(), INTERVAL 45 DAY) ;
+I, [2013-09-08 08:45:58#6372]  INFO -- : DBUtil * Exec Update: DELETE from metrics.appmetrics where endTsp < DATE_SUB(now(), INTERVAL 45 DAY) ; 
+E, [2013-09-08 08:45:58#6372] ERROR -- : DBUtil * Error during execute: DELETE from metrics.appmetrics where endTsp < DATE_SUB(now(), INTERVAL 45 DAY) ;
+E, [2013-09-08 08:45:58#6372] ERROR -- : DBUtil * Mysql::Error Table 'metrics.appmetrics' doesn't exist
+I, [2013-09-08 08:45:58#6372]  INFO -- : BatchExec * Job 7 Complete, status=-1
+I, [2013-09-08 08:46:09#6372]  INFO -- : BatchExec * Job 10 Manual Exec = [dbReport] Show table columns  ** Starting **
+I, [2013-09-08 08:46:09#6372]  INFO -- : BatchExec *   show columns from users ;
+I, [2013-09-08 08:46:09#6372]  INFO -- : DBUtil * Exec Query: show columns from users ; 
+I, [2013-09-08 08:46:09#6372]  INFO -- : BatchExec * Job 10 Complete, status=28
