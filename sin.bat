@@ -1,0 +1,1 @@
+ruby -v -w sinatra1.rb

@@ -1,4 +1,5 @@
 require 'sinatra'
+require 'erb'
 
 require_relative './cache/LocalProperties'
 require_relative './cache/TimedCache'
@@ -11,7 +12,9 @@ require_relative './helpers/Parse'
 require_relative './helpers/FileLogger'
 require_relative './helpers/DBUtil'
 require_relative './helpers/DateUtil'
+require_relative './helpers/Template'
 
+include ERB::Util
 
 Dir["./models/*.rb"].each { |file| require_relative file }
 Dir["./mail/*.rb"].each   { |file| require_relative file }
@@ -50,7 +53,7 @@ before do
 end
   
 not_found do
-  localVars = { :msg => "The page you requested was not found" }
+  localVars = { :msg => "The page you requested at '#{request.path}' was not found" }
   fname = "index"
   filename = "views/#{fname}.erb"  
   if File.exists?(filename)
@@ -87,14 +90,10 @@ end
 get '/CacheInit' do
   CacheInit.reload_all
 end
-  
+   
 # Mini methods dispatched locally  
 get '/foo' do
   "hey, FOO!"
-end
-
-get '/bar' do
-  "oh, BAR!"
 end
 
 get '/test000' do
