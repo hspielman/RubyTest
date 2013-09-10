@@ -1,0 +1,204 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>Test US Map</title>
+
+<script type="text/javascript" src="jquery-1.8.3.min.js"></script>
+<script type="text/javascript" src="jquery.svg.min.js"></script>
+<script type="text/javascript">
+ var stateMap = {} ;
+ var sCount = stateMap.length ;
+</script>
+
+<style type="text/css">
+.hilite { background-color:#F90; fill:#FF3; cursor:pointer; cursor:default; }
+
+.rgnSel { fill:#D33333, cursor:pointer ; } 
+
+}
+</style>
+
+<svg width="0" height="0" id="svgdefs">
+<defs>
+<%
+seq = 1
+reps = 50
+clrStart = 16
+blueOff  = 52
+while seq <= reps do
+  clrEnd = clrStart + 50
+  clrBlueS = clrStart +  blueOff
+  clrBlueE = clrEnd   + (blueOff/2)
+-%>
+  <%= "<linearGradient id='gradRank#{seq}' x1='0%' y1='0%' x2='0%' y2='100%'>" %>
+  <%= "<stop offset='5%'  stop-color='rgb(#{clrStart},#{clrStart},#{clrBlueS})' />" %>
+  <%= "<stop offset='95%' stop-color='rgb(#{clrEnd},#{clrEnd},#{clrBlueE})' />" %>
+  <%= "</linearGradient>" %>  
+<%  
+  seq += 1
+  clrStart += 3
+  blueOff -= 2
+end
+-%>
+
+</defs>
+</svg>
+
+<script type="text/javascript">
+var stList  = new Array() ;
+var stRanks = new Object() ;
+var stRank ;
+var numSt  = 0 ;
+<%
+   stCache = USStates.instance
+   stList  = stCache.getAll
+   stList.each do |state|
+%>
+   stRank = { abbr: '<%= state.postalCode.upcase %>', rank: <%= state.areaRank %>, sqm: <%= state.areaMiles %> } ;
+   stList[numSt++] = stRank ;
+   stRanks['<%= state.postalCode %>'] = stRank ;
+<%    
+  end
+%>
+</script>
+
+</head>
+
+<body style="font-family:Verdana, Geneva, sans-serif;">
+<h1>Map Explorer: <span id="numEx" style="color:#C33;">0</span> States Visited</h1>
+<div style="position:relative; border:1px solid #30C; width:1020px; height:640px;">
+  <div id="map"  
+       style="position:absolute; left:-100px; top:-60px; 
+              border:2px solid #C33; 
+              width:1000px; height:620px;
+              transform:scale(0.8,0.8); -moz-transform:scale(0.8,0.8);"> 
+  </div>
+  <div id="info" 
+       style="position:absolute; border:1px solid #333; text-align:center;
+              opacity:0.6; background-color:#FFF;
+              font-weight:bold; font-size:10pt;
+              min-width:30px; min-height:20px; 
+              padding:6px; left:20px; top:20px;"> - </div>
+</div>
+<script type="text/javascript">
+$(function() 
+{
+    $('#map').svg ({
+    loadURL: 'images/USMap2.svg',
+    onLoad: function(svg) { doBind(); }
+  });
+} );
+
+// default CSS for a region (US State)
+//  "fill":"#888", 
+var rgnCss   = { "fill":"url(#gradRank1)", 
+                 "fill-opacity":1, 
+				 "cursor":"pointer",
+				 "stroke":"#FFFFFF", 
+				 "stroke-width":0.75, 
+				 "stroke-opacity":1, 
+				 "stroke-miterlimit":4, 
+				 "stroke-dasharray":"none" } ;
+					  
+var rgnSel   = { "fill":"#D33333"} ;
+var rgnUnsel = { "fill":"url(#gradRank1)" } ;
+
+var stAbbrev = "?" ;
+var mapLeft = 0 ;
+var mapTop  = 0 ;
+
+function addCommas(str) 
+{
+    var amount = new String(str);
+    amount = amount.split("").reverse();
+
+    var output = "";
+    for ( var i = 0; i <= amount.length-1; i++ ){
+        output = amount[i] + output;
+        if ((i+1) % 3 == 0 && (amount.length-1) !== i)output = ',' + output;
+    }
+    return output;
+}
+
+function doBind()
+{
+  var mapRef = document.getElementById("map") ;
+  if ( mapRef )
+  {
+	mapRef  = mapRef.offsetParent;
+    mapLeft = parseInt(mapRef.offsetLeft);
+    mapTop  = parseInt(mapRef.offsetTop );
+	 $("#info").html( "info x,y: " + mapLeft + "," + mapTop ) ;		 
+  }
+  
+  $(".usrgn").bind (
+  {
+    mouseenter: function(event) 
+	            {
+					 stAbbrev = $(this).attr("id") ;
+					 stateMap[stAbbrev] = "1" ;
+ 					 sCount = Object.keys(stateMap).length ;
+					 $("#numEx").html ( sCount ) ;
+					 if ( stAbbrev == "MI" )
+					   $(".subMI").css (rgnSel) ;
+					 else
+					   $(this).css(rgnSel); 						   
+                     var st  = stRanks[stAbbrev] ;						 
+				     var rnk = (st == null) ? "" : (" #" + st.rank + " - " + addCommas(st.sqm) + " SqM" ) ;
+					 var posX = event.pageX - mapLeft + 10 ;
+					 var posY = event.pageY - mapTop  ;
+					 $("#info").html( stAbbrev + rnk ) .css ( { "left": posX , "top": posY } ) ;		 
+				},
+	 click:      function(event)
+	             {
+						 stAbbrev = $(this).attr("id") ;
+						 $("#info").html( "<b>You clicked on: </b>" + stAbbrev ) ;						 
+				 },
+    mouseleave: function(event) 
+	             { 
+						 stAbbrev = $(this).attr("id") ;
+						 var rgnGrdnt = rgnUnsel ;
+                         var st = stRanks[stAbbrev] ;						 
+						 if ( st != null )
+						   rgnGrdnt = { "fill": "url(#gradRank" + st.rank + ")" } ; 
+						 if ( stAbbrev == "MI" )
+						   $(".subMI").css (rgnGrdnt) ;
+						 else
+						   $(this).css(rgnGrdnt); 					 
+
+				 }
+
+   }   );
+		
+	$(".usrgn").css(rgnCss);
+	$(".subMI").css(rgnCss);
+	
+	var idx = 0 ;
+	while (idx < numSt)
+	{
+	   var st = stList[idx++] ;
+	   if ( st )
+	   {
+		  var rank = (st.rank >   50 ) ? 50      : st.rank ;
+		  var abbr = (st.abbr == "MI") ? "subMI" : st.abbr ;
+		  
+		  var urlGrdnt = "url(#gradRank" + rank + ")" ;
+		  var rgnGrdnt = { "fill": urlGrdnt } ; 
+		  var ref = document.getElementById(abbr) ;
+		  
+		  if ( ref != null )
+		  {			   
+			 $("#" + abbr).css ( rgnGrdnt ) ;
+		  }
+	   }
+	}
+	
+	
+}
+
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<head>
+<meta charset="utf-8">
+<title>Log File</title>
+</head>
+<%
+   filePath = params[:path]
+   filePath = FileLogger::LOG_FILE if filePath == nil
+   
+   showKB   = params[:last]
+   showKB   = showKB == nil ? 8 : showKB.to_i
+   
+   showSize = showKB * 1024
+%>
+
+<body>
+
+<code>
+<% 
+   begin
+   File.open(filePath, 'r') do |log_file|
+      fSize  = log_file.size
+%>
+      <b><%= "#{filePath} size is #{fSize} - show last #{showSize} bytes" %></b><br />
+<%	  
+	  toSkip = fSize - showSize
+      log_file.read.each_line do |line|
+	     toSkip -= (line.size+2)
+		 if toSkip <= 0 
+            line.strip!
+%>
+            <%= line %><br />
+<%	
+         end	 
+      end
+   end  
+   rescue => ex
+%>
+   <b><%= ex.to_s %></b><br />
+
+<% 
+   ensure
+   
+   end
+%>
+</code>
+
+</body>
+
+</html>

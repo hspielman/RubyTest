@@ -1,0 +1,9 @@
+==========================================
+THIS METHOD USES RUBY ERB REPLACEMENT
+Dear <%= map1[:firstName] %>,
+
+Thanks for opening an account. Your first bill will be for <%= map1[:amount] %>.
+
+Regards,
+The XYZ Team
+------------------------------------------

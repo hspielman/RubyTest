@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<head>
+<meta charset="utf-8">
+<title>Ruby Test</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2, user-scalable=1" /> 
+</head>
+<%
+   lcCache = LocalProperties.instance
+   
+   htm     = ""
+   theProp = params[:prop]
+   if theProp == nil
+      props   = lcCache.getMap
+      props.each { |key,val| htm += "<tr><td>#{key}</td><td>#{val}</td></tr>" }
+   else
+      pval = lcCache.getProperty(theProp, "not-found")
+	  htm  = "<tr><td>#{theProp}</td><td>#{pval}</td></tr>"
+   end
+%>
+
+<body>
+  <table width='700' cellpadding='0' border='0' >
+   <tr>
+    <th align='left' width='40%'>Name</th><th align='left'>Value</th>
+   </tr>
+  <%= htm %>
+  </table>
+</body>
+
+</html>

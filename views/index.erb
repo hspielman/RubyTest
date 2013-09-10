@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<head>
+<meta charset="utf-8">
+<title>Ruby Index</title>
+</head>
+<%
+   @uname = params[:user]
+	if (!defined?(msg)) || (msg.nil?) || (msg.length == 0)
+	  msg = "WELCOME #@uname"
+	end
+%>
+<body>
+   <h3><%= msg %></h3>
+   <ul>
+     <li><a href='showLog.htm?last=4'>Show Log File</a></li>
+     <li><a href='showConf.htm'>Show Local Properties</a></li>
+     <li><a href='showProp.htm'>Show System Properties</a></li>
+     <li><a href='showDBReports.htm'>Show DB Reports</a></li>
+     <li><a href='batchList.htm?by=exec&active=false'>List Batch Jobs</a></li>
+     <li><a href='USMap.htm'>US Map (data.gov)</a></li>
+   </ul>
+</body>
+
+</html>

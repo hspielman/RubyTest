@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<head>
+<meta charset="utf-8">
+<title>List Batch Jobs</title>
+</head>
+<%
+   listBy     = params[:by]
+   active     = Parse.get_boolean(params[:active], false)
+
+   if ( listBy == 'id' )
+      jobList = BatchJob.list_all_by_id(active)  
+   else
+      jobList = BatchJob.list_all_by_exec(active)
+   end
+   
+%>
+
+<body>
+  <table width='96%' cellpadding='0' border='0' >
+  <tr>
+     <th><a href='batchList.htm?by=id&active=<%= active.to_s %>'>ID</a></th>
+     <th>Type</th><th>Name</th><th>Description</th><th>Command</th><th>Actv</th><th>Blkd</th>
+     <th><a href='batchList.htm?by=exec&active=<%= active.to_s %>'>Exec-Tsp</a></th>
+     <th>DOW</th><th>Only On Date</th><th>Mail-To</th><th>Exec<br />Today</th>
+  </tr>
+<% jobList.each do |job| -%>
+    <tr>
+	  <td><%= job.id %></td>
+	  <td><%= job.type %></td>
+	  <td><a href='batchDetail.htm?id=<%= job.id %>'><%= job.name %></a></td>
+	  <td><%= job.description[0,25] %></td>
+	  <td><%= job.command[0,30] %></td>
+	  <td align='center'><%= job.active %></td>
+	  <td align='center'><%= job.blocked %></td>
+      <td align='center'><%= DateUtil.format_time_short(job.executionTsp) %></td>
+	  <td align='center'><%= DBUtil.dow_name(job.executionDOW) %></td>
+	  <td align='center'><%= job.executeOnce ? DateUtil.format_date_only(job.executionTsp) : "-" %></td>
+	  <td><%= job.mailTo %></td>
+	  <td align='center'><%= job.numExecs.to_s %></td>
+    </tr>
+<% end -%>
+  </table>
+</body>
+
+</html>

@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<head>
+<meta charset="utf-8">
+<title>Batch Jobs</title>
+</head>
+<%
+   listBy     = params[:by]
+   activeOnly = params[:active]
+   
+   active     = false
+   if ( activeOnly != nil && activeOnly == '1' )
+     active = true 
+   end
+   
+   htm = ""
+   if ( listBy == 'exec' )
+     jobList = BatchJob.list_all_by_exec(active)
+   else
+     jobList = BatchJob.list_all_by_id(active)  
+   end
+   
+   jobList.each { |job| htm += "<tr><td>#{job.to_s}</td></tr>" }
+%>
+
+<body>
+  <table width='900' cellpadding='0' border='0' >
+  <%= htm %>
+  </table>
+</body>
+
+</html>

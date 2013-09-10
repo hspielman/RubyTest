@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<head>
+<meta charset="utf-8">
+<title>List Batch Jobs</title>
+</head>
+<%
+   id     = params[:id]
+   exec   = "Exec" == params[:submit]
+	result = ""
+   
+   job = BatchJob.get_by_id(id)  
+   job = BatchJob.new if job.nil?  
+   if ( job.id <= 0 || job.blocked )
+	  result = "May not execute a BLOCKED job" if exec
+     exec   = false 
+   end
+   
+   if exec
+     bjExec   = BatchJobExec.new
+	  outLines = Array.new
+     bjExec.execute(job, outLines, false, true)
+	  outLines.each { |line| result += (line + "<br/>") }
+     job    = BatchJob.get_by_id(id)  
+   end
+%>
+
+<body>
+  <h2>Batch Detail # <%= job.id %></h2>
+  <form id="form1" name="form1" action="batchDetail.htm" method="get" >
+    <input name="id" type="hidden" value="<%= job.id %>" />
+    <table width='700' cellpadding='0' border='0' >
+     <tr>
+      <td width="25%">ID</td> <td><b><%= job.id %></b></td>
+     </tr>
+     <tr>
+      <td>Type: Name</td> <td>[ <%= job.type %> ] <%= job.name %></td>
+     </tr>
+     <tr>
+      <td>Desc</td> <td><%= job.description %></td>
+     </tr>
+     <tr>
+      <td>Command</td> <td><%= job.command %></td>
+     </tr>
+     <tr>
+      <td>Actv - Blkd</td> <td><%= job.active.to_s %> - <%= job.blocked.to_s %></td>
+     </tr>  
+     <tr>
+      <td>Exec Tsp</td> <td><%= DateUtil.format_full(job.executionTsp) %></td>
+     </tr>  
+     <tr>
+      <td>Exec DOW / Once Only</td> <td><%= DBUtil.dow_name(job.executionDOW) %> : 
+		    <%= job.executeOnce ? DateUtil.format_date_only(job.executionTsp) : "-" %></td>
+     </tr>  
+     <tr>
+      <td>Execs Today</td> <td><%= job.numExecs.to_s %></td>
+     </tr>  
+     <tr>
+      <td></td> <td><input style="margin-top:12px;" name="submit" type="submit" value="Exec"></td>
+     </tr>
+     </table>
+  </form>
+
+  <p><%= result %></p>
+</body>
+
+</html>

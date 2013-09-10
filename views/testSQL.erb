@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<head>
+<meta charset="utf-8">
+<title>SQL Test</title>
+</head>
+<%
+    message = "" 
+    uName = params[:user]
+    uName = 'a' if uName == nil
+
+    type = params[:type]
+    if type == nil
+      stmt  = "SELECT id,userName,totalLogins from users where userName like '%#{uName}%' ;"
+    elsif type == '2'
+      stmt  = "SELECT id,totalLogins,userName from users where userName like '%#{uName}%' ;"
+	else
+      stmt  = "UPDATE users set totalLogins=totalLogins+1 where userName like '%#{uName}%' ;"
+    end
+	
+	message += "#{stmt} <br />"
+	
+	if type == '3'
+	   rows = DBUtil.exec_update("testUPD", stmt)
+	   message += "#{rows} ROWS UPDATES<br />"
+	else
+	    rs = DBUtil.exec_query("testQRY", stmt)
+		if rs == nil 
+		  message += "NO RESULTS RETURNED<br />"
+		else	
+		  rs.each { |row| message += row.to_s + "<br />" }
+		end	
+	end
+%>
+
+<body>
+  SQL QUERY<br />
+  <%= message %>
+</body>
+
+</html>

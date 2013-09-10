@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<head>
+<meta charset="utf-8">
+<title>DB Reports</title>
+</head>
+<%
+   id = Parse.get_int(params[:id], 0)
+   
+   dbr = DBReport.get_by_id(id)
+   user_parms = Array.new
+   sql_stmt   = ""
+%>
+   
+<body>
+<%   if ( dbr == nil || dbr.id <= 0 ) %>
+	  <%= "DBReport Not Found, id=#{id}" %>
+<% 
+	 else 
+%>
+<%= "<p>DBReport Found, id=#{dbr.id} name=#{dbr.name}</p>" %>
+    <form id="form1" name="form1" method="get" action="execDBReport.htm">
+    <input name="id" type="hidden" value="<%= id %>" />
+    <table style="min-width:480px;" border='1'>
+<%	  
+        spec_map = { :userID => "3" , :orgID => "23" }
+        dbr.parse_statement
+        parm_arr = dbr.parm_arr
+		nparms   = parm_arr.size
+		seq      = 0
+		inp      = Array.new
+		parm_arr.each do |dbrParam|
+		  if dbrParam.mapped? 
+		    pval = dbrParam.value(spec_map)
+		  else
+            seq += 1 
+		    pseq = "p#{seq}"
+		    pval = Parse.get_string(params[pseq.to_sym], "") 
+            user_parms.push(pval)			
+		  end
+%>
+          <tr> 
+		  <td><%= dbrParam.name %></td>
+		  <td>
+<%        if dbrParam.mapped?    %>		  
+		    <b><%= pval %></b>
+<%		  else         %>
+		    <input name="p<%= seq %>" type="text" id="p<%= seq %>" 
+		           value="<%= pval %>" 
+			       size="25" maxlength="<%= dbrParam.maxLen %>" />	
+<%		  end   %>
+          </td>	
+		  </tr>
+<%		 
+	    end
+%>
+     <tr>
+       <td></td>
+       <td><input type="submit" name="submit" id="submit" value="Submit" /></td>
+     </tr>
+	  
+    </table>
+    </form>
+<%   
+       dbr.set_spec_map(spec_map)
+	   sql_stmt = dbr.executable_statement(user_parms) 
+    end 
+
+	if ( sql_stmt.size > 0 )
+%>
+      <p><code><%= sql_stmt%></code></p> 	
+<%   
+	  rs = DBUtil.exec_query("exec-ui", sql_stmt)
+	  if ( ! rs.nil? )
+        rs.each do |row|
+%>
+         <%= row.to_s %><br />
+<%	  
+        end
+	  else
+%>	  
+         NO RESULTS RETURNED<br />
+<%	  	  
+	  end
+	end
+%>
+
+
+
+</body>
+
+</html>

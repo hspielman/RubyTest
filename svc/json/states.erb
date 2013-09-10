@@ -1,0 +1,21 @@
+{ [
+<% 
+   # JSON list of all states
+   sep = "" 
+   stCache = USStates.instance
+   seq = params[:sort]
+   if ( seq == 'abbr' )
+     stList  = stCache.list_byAbbr
+   elsif ( seq == 'area' )
+     stList  = stCache.list_byArea
+   else
+     stList  = stCache.getAll
+   end
+   stList.each do |state|
+-%>
+  <%= sep %> { :abbr => '<%= state.postalCode.upcase %>', rank: <%= state.areaRank %>, sqm: <%= state.areaMiles %>  }
+<% 
+   sep = ","  
+   end 
+-%>
+] }

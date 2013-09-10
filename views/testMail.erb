@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<head>
+<meta charset="utf-8">
+<title>MAIL Test</title>
+</head>
+<%
+   service = params[:mail]
+   if service == nil
+     mailer  = MailFactory.getDefaultMailer
+   else
+     mailer  = MailFactory.getMailer(service)
+   end
+   
+   recipient = params[:to]
+   recipient = "hspielman@gmail.com" if recipient == nil
+
+   subj = params[:subj]
+   subj = "THIS IS A TEST" if subj == nil
+   
+   txtBody = "this is a plain text body"
+   htmBody = "And <b>this</b> is an HTML body"
+   
+   success = mailer.sendIt(recipient, subj, txtBody, htmBody)
+   message = success ? "Did it work OK?" : " ** ERROR sending email ** "
+%>
+
+<body>
+  Send Email to: <%= recipient %><br />
+  <%= message %>
+</body>
+
+</html>

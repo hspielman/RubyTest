@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<head>
+<meta charset="utf-8">
+<title>Ruby Test</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2, user-scalable=1" /> 
+</head>
+<%
+   @uname = params[:user]
+%>
+<body>
+  <p> I am line 1 </br>
+      I am line 2 </p>
+  the request counter is now <b><%= @@rq_count %></b><br />
+  the time is <%= Time.now %><br />
+ 
+  <p> Query params: <b><%= request.query_string %></b> </p>
+  <p> User Name : <b><%= @uname %></b> </p>
+ 
+  <%= request.env.map { |e| e.to_s + " ---<br />" } %>
+ </body>
+
+</html>

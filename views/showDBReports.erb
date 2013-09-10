@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<head>
+<meta charset="utf-8">
+<title>DB Reports</title>
+</head>
+<%
+   id         = params[:id]
+   listBy     = params[:by]
+   activeOnly = params[:active]
+   
+   active     = false
+   if ( activeOnly != nil && activeOnly == '1' )
+     active = true 
+   end
+   
+   htm = ""
+   if ( ! id.nil? )
+     dbReport = DBReport.get_by_id(id)
+	 rptList = Array.new
+	 rptList[0] = dbReport
+   elsif ( listBy == 'name' )
+     rptList = DBReport.list_by_name(active)
+   elsif listBy == 'public'
+     rptList = DBReport.list_public
+   else
+     rptList = DBReport.list_by_id(active)  
+   end
+   
+   numResult = rptList == nil ? 0 : rptList.size
+   if ( numResult == 0 || (numResult == 1 && rptList[0] == nil) )
+     htm += "No results found"
+   else
+     rptList.each do |dbr| 
+	   if ! id.nil? 
+	     htm += "<tr><td><a href='execDBReport.htm?id=#{dbr.id}'>Exec Report #{dbr.id}</a></td></tr>" 
+	   end
+	   htm += "<tr><td>#{dbr.to_s}</td></tr>" 
+	   htm += "<tr><td style='padding-left:10px;color:#C00;'><code>#{dbr.statement}</code></td></tr>"
+	   htm += "<tr><td style='padding-left:10px;'><code>#{dbr.pre_executable_statement}</code></td></tr>"
+	 end
+   end
+%>
+
+<body>
+  <table width='950' cellpadding='0' border='0' >
+  <%= htm %>
+  </table>
+</body>
+
+</html>

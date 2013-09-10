@@ -1,0 +1,3 @@
+       SELECT  year,stateID,population, @seq := @seq + 1  
+       FROM state_census scr, (select @seq := 0) initCount 
+       WHERE scr.year = 2011 ORDER BY scr.population DESC 

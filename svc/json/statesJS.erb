@@ -1,0 +1,24 @@
+<% 
+   require 'json'
+   jsOpts = { :indent => ' ' }
+      
+   # JSON list of all states from cache
+   stCache = USStates.instance
+   
+   # Get list based on sort order desired
+   seq = params[:sort]
+   if ( seq == 'abbr' )
+     stList  = stCache.list_byAbbr
+   elsif ( seq == 'area' )
+     stList  = stCache.list_byArea
+   else
+     stList  = stCache.getAll
+   end
+   
+   # Convert to an array of hash objects for the JSON response
+   jsList = Array.new
+   stList.each do |state|
+     jsList.push( state.to_h )
+   end
+-%>
+{ <%= JSON.generate(jsList) %> }
