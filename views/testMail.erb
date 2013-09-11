@@ -4,22 +4,23 @@
 <title>MAIL Test</title>
 </head>
 <%
-   to      = Parse.get_string(params[:to]     , "") 
-   subj    = Parse.get_string(params[:subj]   , "Test Email") 
-   txtBody = Parse.get_string(params[:txtBody], "") 
-   htmBody = Parse.get_string(params[:htmBody], "") 
+   to      = Parse.get_string(params[:to]           , "") 
+   subj    = Parse.get_string(params[:subj]         , "Test Email") 
+   txtBody = Parse.get_string(params[:txtBody]      , "") 
+   htmBody = Parse.get_string(params[:htmBody]      , "") 
+	tParms  = Parse.get_string(params[:templateParms], "name = jim; date=Wednesday ")
 	
 	template = Parse.get_string(params[:template], "")
 	if ( template.length > 0 )
-	  fname = "/RubyTest/mail/templates/#{template}.txt"
+	  tHash  = Template.parms_to_hash(tParms)
+	  fname = "./mail/templates/#{template}.txt"
 	  t     = Template.new
 	  begin
 	    t.load_file(fname) 
-		 t_map = { :name => "Player", :date => "Wednesday" }
-		 txtBody = t.evaluate(t_map)
+		 txtBody = t.evaluate(tHash)
 	  rescue => ex 
 	    txtBody = ex.to_s
-	  end
+	  end	  
 	end
 	
 	
@@ -41,6 +42,7 @@
      message = success ? "Did it work OK?" : " ** ERROR sending email ** "
 	end
 	
+	o_sel = "selected"
 %>
 
 <body>
@@ -70,21 +72,27 @@
      <td>Template</td>
      <td>
         <select name="template" id="template">
-           <option value="" selected>none</option>
-           <option value="welcome">welcome</option>
+           <option value="" >none</option>
+           <option value="welcome" <%= template=="welcome" ? o_sel : "" %>>welcome</option>
         </select>
         <input type="submit" name="evaluate" id="evaluate" value="Evaluate"></td>
+    </tr>
+    <tr>
+       <td>Template Parms</td>
+       <td><label for="templateParms"></label>
+          <label for="templateParms"></label>
+         <textarea name="templateParms" id="templateParms" cols="65" rows="3"><%= tParms %></textarea></td>
     </tr>
     
     <tr>
      <td>TXT Body</td>
      <td>
-        <textarea name="txtBody" id="txtBody" cols="65" rows="5"><%= txtBody %></textarea></td>
+        <textarea name="txtBody" id="txtBody" cols="65" rows="4"><%= txtBody %></textarea></td>
     </tr>
     <tr>
      <td>HTM Body</td>
      <td>
-        <textarea name="htmBody" id="htmBody" cols="65" rows="5"><%= htmBody %></textarea></td>
+        <textarea name="htmBody" id="htmBody" cols="65" rows="4"><%= htmBody %></textarea></td>
     </tr>
     <tr>
      <td></td>

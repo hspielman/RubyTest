@@ -7,6 +7,21 @@ require 'open-uri'
 
 class Template
 
+   # Class method to convert string parms a = xx ; b = yy ; to hash { "a" => "xx", "b" => "yy" }
+	def self.parms_to_hash(str)
+	  theHash = {}
+	  return theHash if str.nil?
+	  parms = str.split(";")
+	  parms.each do |parm|
+		 p = parm.strip.split("=",2)
+		 if ( p.size == 2 )
+			theHash[p[0].strip] = p[1].strip
+		 end
+	  end
+	  theHash
+	end
+	
+	
    # No template set yet...
    def initialize()
      @template = "call load_file() or load_url() to load a template"
