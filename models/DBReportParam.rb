@@ -13,7 +13,7 @@ class DBReportParam
  def value(spec_map)
    if @mapped
      val = spec_map[@name.to_sym]
-     val == nil ? "?" : val
+     val == nil ? "?" : val.to_s
    else
      @value
    end  
@@ -22,7 +22,7 @@ class DBReportParam
  def value=(val)
    raise "May not set value for a MAPPED param -- resolve via spec_map" if @mapped
    
-   @value = val if !val.nil?
+   @value = val.to_s if !val.nil?
  end
  
  def initialize(str, sep=nil)

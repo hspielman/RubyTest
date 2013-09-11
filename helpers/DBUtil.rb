@@ -60,6 +60,10 @@ module DBUtil
     end    
     return rs
   end
+  
+  # NEED TO CLEAN UP CONNECTION AND RS !!!!
+  
+  
  
   def self.exec_update(name, statement)
      rows = 0
