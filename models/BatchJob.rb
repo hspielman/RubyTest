@@ -20,6 +20,12 @@ class BatchJob
      return bj
  end
  
+ INSERT_SQL = "INSERT INTO batch_job 
+           (type,name,description,command,  active,blocked,  executionTsp,executionDOW,executeOnce,mailTo)
+			  VALUES (?,?,?,?,  ?,?,  ?,?,?,?) ; " 
+
+
+
  SELECT_COLS = "SELECT bj.id,type,name,description,command,active,blocked,executionTsp,executionDOW,executeOnce,mailTo,  
                  (SELECT count(*) from batch_history bh2  
                    WHERE bh2.jobID = bj.id and DATE(bh2.execStartTsp) = DATE(now()) ) as numExecs  
@@ -116,4 +122,18 @@ class BatchJob
    return @type == 'dbUpdate'
  end
   
+ UPDATE_SQL = "UPDATE batch_job SET
+                type=?,name=?,description=?,command=?, 
+					 active=?,blocked=?, 
+					 executionTsp=?,executionDOW=?,executeOnce=?,mailTo=?
+			      WHERE id=? ; " 
+
+ def update 
+	parms = [@type,@name,@description,@command, 
+	         DBUtil.bool_fmt(@active),DBUtil.bool_fmt(@blocked), 
+				DBUtil.tsp_fmt(@executionTsp),@executionDOW,DBUtil.bool_fmt(@executeOnce),@mailTo, @id]
+	nRows = DBUtil.update_object('BatchJob', false, BatchJob::UPDATE_SQL, *parms)
+	return nRows
+ end
+
 end

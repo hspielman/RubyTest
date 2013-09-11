@@ -1,3 +1,4 @@
+require 'time'
 require 'mysql'
 require_relative '../cache/LocalProperties'
 require_relative '../helpers/FileLogger'
@@ -16,7 +17,18 @@ module DBUtil
       idx
     end
   end
+
+ 
+  FORMAT_TSP = "%Y-%m-%d %H:%M:%S"  
+  def self.tsp_fmt(time)
+    time.strftime(self::FORMAT_TSP)
+  end
   
+  def self.bool_fmt(bool)
+    if bool then 1 else 0 end
+  end
+  
+    
   
   lcCache  = LocalProperties.instance
   @@dbAddr = lcCache.getProperty("dbAddr", "127.0.0.1")
@@ -90,6 +102,5 @@ module DBUtil
     end    
     return rows  
   end
- 
-  
+
 end 

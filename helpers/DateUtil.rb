@@ -11,6 +11,10 @@ module DateUtil
   def self.format_full(time)
     time.strftime(self::FORMAT_FULL)
   end
+
+  def self.db_format(time)
+    time.strftime(self::FORMAT_FULL)
+  end
   
   def self.format_short(time)
     time.strftime(self::FORMAT_SHORT)

@@ -8,24 +8,24 @@
    subj    = Parse.get_string(params[:subj]         , "Test Email") 
    txtBody = Parse.get_string(params[:txtBody]      , "") 
    htmBody = Parse.get_string(params[:htmBody]      , "") 
-	tParms  = Parse.get_string(params[:templateParms], "name = jim; date=Wednesday ")
-	
-	template = Parse.get_string(params[:template], "")
-	if ( template.length > 0 )
-	  tHash  = Template.parms_to_hash(tParms)
-	  fname = "./mail/templates/#{template}.txt"
-	  t     = Template.new
-	  begin
-	    t.load_file(fname) 
-		 txtBody = t.evaluate(tHash)
-	  rescue => ex 
-	    txtBody = ex.to_s
-	  end	  
-	end
-	
-	
+   tParms  = Parse.get_string(params[:templateParms], "name = jim; date=Wednesday ")
+   
+   template = Parse.get_string(params[:template], "")
+   if ( template.length > 0 )
+     tHash  = Template.parms_to_hash(tParms)
+     fname = "./mail/templates/#{template}.txt"
+     t     = Template.new
+     begin
+       t.load_file(fname) 
+       txtBody = t.evaluate(tHash)
+     rescue => ex 
+       txtBody = ex.to_s
+     end     
+   end
+   
+   
    send   = "Send" == params[:submit]
-	result = ""
+   result = ""
 
    service = params[:mailsvc]
    if service == nil
@@ -36,13 +36,13 @@
    
    to      = "hspielman@gmail.com" if (to == nil || to.length == 0)
    message = "Complete form and hit Send"
-	
-	if send     
+   
+   if send     
      success = mailer.sendIt(to, subj, txtBody, htmBody)
      message = success ? "Did it work OK?" : " ** ERROR sending email ** "
-	end
-	
-	o_sel = "selected"
+   end
+   
+   o_sel = "selected"
 %>
 
 <body>

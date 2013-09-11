@@ -6,16 +6,30 @@
 <%
    id     = params[:id]
    exec   = "Exec" == params[:submit]
+   updt   = "Update" == params[:submit]
 	result = ""
-   
+	   
    job = BatchJob.get_by_id(id)  
    job = BatchJob.new if job.nil?  
    if ( job.id <= 0 || job.blocked )
 	  result = "May not execute a BLOCKED job" if exec
      exec   = false 
    end
+
+	name    = Parse.get_string( params[:name], job.name )
+	desc    = Parse.get_string( params[:desc], job.description )
+	cmd     = Parse.get_string( params[:cmd ], job.command )
+	execTsp = Parse.get_date( params[:execTsp], job.executionTsp )
    
-   if exec
+	if updt 
+	  job.name = name
+	  job.description = desc
+	  job.command = cmd
+	  job.executionTsp = execTsp
+	  nrows = job.update
+	  result = "#{nrows} items updated"
+	  
+	elsif exec
      bjExec   = BatchJobExec.new
 	  outLines = Array.new
      bjExec.execute(job, outLines, false, true)
@@ -28,34 +42,51 @@
   <h2>Batch Detail # <%= job.id %></h2>
   <form id="form1" name="form1" action="batchDetail.htm" method="get" >
     <input name="id" type="hidden" value="<%= job.id %>" />
-    <table width='700' cellpadding='0' border='0' >
+    <table width='850' cellpadding='2' border='0' >
      <tr>
       <td width="25%">ID</td> <td><b><%= job.id %></b></td>
      </tr>
      <tr>
-      <td>Type: Name</td> <td>[ <%= job.type %> ] <%= job.name %></td>
+      <td>Type: Name</td> <td>[ <%= job.type %> ] 
+         <input name="name" type="text" id="name" value="<%= name %>" size="35" maxlength="50">
+      </td>
      </tr>
      <tr>
-      <td>Desc</td> <td><%= job.description %></td>
+      <td>Desc</td> 
+      <td><input name="desc" type="text" id="desc" value="<%= desc %>" 
+          size="60" maxlength="90">
+      </td>
      </tr>
      <tr>
-      <td>Command</td> <td><%= job.command %></td>
+      <td>Command</td> <td>
+         <textarea name="cmd" id="cmd" cols="65" rows="3"><%= cmd %></textarea></td>
      </tr>
      <tr>
       <td>Actv - Blkd</td> <td><%= job.active.to_s %> - <%= job.blocked.to_s %></td>
      </tr>  
      <tr>
-      <td>Exec Tsp</td> <td><%= DateUtil.format_full(job.executionTsp) %></td>
+      <td>Exec Tsp</td> <td>
+         <input name="execTsp" type="text" id="execTsp" value="<%= DBUtil.tsp_fmt(execTsp) %>" 
+                size="22" maxlength="22"></td>
      </tr>  
      <tr>
       <td>Exec DOW / Once Only</td> <td><%= DBUtil.dow_name(job.executionDOW) %> : 
 		    <%= job.executeOnce ? DateUtil.format_date_only(job.executionTsp) : "-" %></td>
+     </tr>
+     <tr>
+        <td>&nbsp;</td>
+        <td><input type="submit" name="submit" id="update" value="Update"></td>
+     </tr>
+     <tr>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
      </tr>  
      <tr>
-      <td>Execs Today</td> <td><%= job.numExecs.to_s %></td>
+      <td>Execs Today</td> <td><%= job.numExecs.to_s %>
+         <input style="margin-left:20px; margin-top:12px;" name="submit" type="submit" value="Exec"></td>
      </tr>  
      <tr>
-      <td></td> <td><input style="margin-top:12px;" name="submit" type="submit" value="Exec"></td>
+      <td></td> <td>&nbsp;</td>
      </tr>
      </table>
   </form>
