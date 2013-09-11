@@ -13,6 +13,7 @@ require_relative './helpers/FileLogger'
 require_relative './helpers/DBUtil'
 require_relative './helpers/DateUtil'
 require_relative './helpers/Template'
+require_relative './helpers/GoogleData'
 
 include ERB::Util
 
@@ -91,6 +92,11 @@ get '/CacheInit' do
   CacheInit.reload_all
 end
    
+get '/GoogleData' do
+  goog = GoogleData.new(params)
+  goog.execute
+end
+	
 # Mini methods dispatched locally  
 get '/foo' do
   "hey, FOO!"

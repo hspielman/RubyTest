@@ -22,7 +22,7 @@ class DBReportParam
  def value=(val)
    raise "May not set value for a MAPPED param -- resolve via spec_map" if @mapped
    
-   @value = val
+   @value = val if !val.nil?
  end
  
  def initialize(str, sep=nil)

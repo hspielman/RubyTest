@@ -22,9 +22,9 @@
     <input name="id" type="hidden" value="<%= id %>" />
     <table style="min-width:480px;" border='1'>
 <%	  
-        spec_map = { :userID => "3" , :orgID => "23" }
-        dbr.parse_statement
-        parm_arr = dbr.parm_arr
+      spec_map = { :userID => "3" , :orgID => "23" }
+      dbr.parse_statement
+      parm_arr = dbr.parm_arr
 		nparms   = parm_arr.size
 		seq      = 0
 		inp      = Array.new
@@ -32,23 +32,22 @@
 		  if dbrParam.mapped? 
 		    pval = dbrParam.value(spec_map)
 		  else
-            seq += 1 
+          seq += 1 
 		    pseq = "p#{seq}"
 		    pval = Parse.get_string(params[pseq.to_sym], "") 
-            user_parms.push(pval)			
+          user_parms.push(pval)			
 		  end
 %>
-          <tr> 
+        <tr> 
 		  <td><%= dbrParam.name %></td>
 		  <td>
 <%        if dbrParam.mapped?    %>		  
 		    <b><%= pval %></b>
 <%		  else         %>
 		    <input name="p<%= seq %>" type="text" id="p<%= seq %>" 
-		           value="<%= pval %>" 
-			       size="25" maxlength="<%= dbrParam.maxLen %>" />	
+		           value="<%= pval %>" size="25" maxlength="<%= dbrParam.maxLen %>" />	
 <%		  end   %>
-          </td>	
+        </td>	
 		  </tr>
 <%		 
 	    end

@@ -29,7 +29,6 @@ module DBUtil
   end
   
     
-  
   lcCache  = LocalProperties.instance
   @@dbAddr = lcCache.getProperty("dbAddr", "127.0.0.1")
   @@dbUser = lcCache.getProperty("dbUser", "admin")
