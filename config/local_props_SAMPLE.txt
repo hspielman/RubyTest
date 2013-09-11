@@ -1,0 +1,18 @@
+# Make name unique across all machines if we keep machine-based metrics
+machine = TestRuby01
+
+# Type: dev, test, demo, prod
+type    = dev
+
+# Define the DB address, login credentials, and schema for this app
+dbAddr  = 127.0.0.1
+dbUser  = UUUUU
+dbPass  = PPPPP
+dbName  = usa
+dbName  = trkr
+
+# Properties for file logging
+log-MaxSize     = 1000000
+log-Generations = 4
+log-DateFormat  = %Y-%m-%d %H:%M:%S
+log-FilePath    = ./logs/appLog.txt
