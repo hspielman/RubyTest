@@ -3,7 +3,7 @@ require 'singleton'
 class LocalProperties 
 
 include Singleton
-@@propFile = "/RubyTest/config/local_props.txt"
+@@propFile = "./config/local_props.txt"
 
   def initialize 
       @nameMap = Hash.new

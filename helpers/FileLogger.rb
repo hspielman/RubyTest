@@ -8,7 +8,7 @@ class FileLogger
   maxSize   = Parse.get_int(lcCache.getProperty("log-MaxSize"    , ""), 25000) ;
   maxGen    = Parse.get_int(lcCache.getProperty("log-Generations", ""), 2    ) ; 
   dateFmt   = lcCache.getProperty("log-DateFormat", "%Y-%m-%d %H:%M:%S") 
-  LOG_FILE  = lcCache.getProperty("log-FilePath"  , "/RubyTest/logs/rubyLog.txt")
+  LOG_FILE  = lcCache.getProperty("log-FilePath"  , "./logs/rubyLog.txt")
  
   @@logger = Logger.new(LOG_FILE, maxGen, maxSize)
   @@logger.datetime_format = dateFmt 
