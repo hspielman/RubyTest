@@ -4,7 +4,8 @@ module Parse
 
    def self.get_int(val, default)
      begin
-       useDefault = (val == nil)
+	    default = 0  if default.nil?
+       useDefault =  val.nil?
        if (!useDefault) && (val.instance_of? String) && (val.length == 0) 
          useDefault = true 
        end
@@ -12,12 +13,14 @@ module Parse
      rescue 
        iVal = default
      end
+	  iVal.gsub!(/,/, "")
      return iVal.to_i
    end
   
    def self.get_float(val, default)
      begin
-       useDefault = (val == nil)
+	    default = 0.0  if default.nil?
+       useDefault =  val.nil?
        if (!useDefault) && (val.instance_of? String) && (val.length == 0) 
          useDefault = true 
        end
@@ -25,6 +28,7 @@ module Parse
      rescue
        fVal = default
      end
+	  fVal.gsub!(/,/, "")
      return fVal.to_f
    end
 

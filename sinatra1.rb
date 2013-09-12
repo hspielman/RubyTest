@@ -32,8 +32,6 @@ ws_opts = { :content_type => "text/json", :views => "svc" }
 # Allow use of line-break suppression in ERB templates
 set :erb, :trim => '-'
 
-# Count all requests recieved
-@@rq_count = 0
 
 runBatch = false 
 ARGV.each do |arg|
@@ -49,10 +47,36 @@ else
   puts " ** Batch Scheduler is DISABLED. Add -batch to run it ** "
 end
 
+
+# Count all requests recieved
+@@rq_count = 0
+
 before do
   @@rq_count += 1 
 end
+
+
+# map of headers for no-cache
+@@no_cache = { "Cache-Control" => "no-cache",  
+               "Expires"       => "Sun, 08 Sep 2013 00:00:00 GMT" }
+
+[ '/json/:name/*', '/svc/:name/*', '/CacheInit' ].each  do |route|
+	before route  do
+	   headers  @@no_cache
+	end
+end
+
+# map of headers for JSON service, w/ no-cache
+@@json_svc = { "Cache-Control" => "no-cache", 
+               "Expires"       => "Mon, 09 Sep 2013 00:00:00 GMT" ,
+				   "Content-Type"  => "text/json; charset=utf-8" }
   
+before '/GoogleData'  do
+   headers  @@json_svc
+end
+
+  
+# 404 Handler - show index page  
 not_found do
   localVars = { :msg => "The page you requested at '#{request.path}' was not found" }
   fname = "index"
@@ -63,6 +87,7 @@ not_found do
     p "Page not found (and no index.htm either)"
   end
 end
+
   
 # Either /json or /svc in path indicates JSON web service  
 [ '/json/:name/*', '/svc/:name/*' ].each do |route|
@@ -102,9 +127,6 @@ get '/foo' do
   "hey, FOO!"
 end
 
-get '/test000' do
-  erb 'test0'.to_sym
-end
 
 get '/hello/:name' do
   # matches "GET /hello/foo" and "GET /hello/bar"
@@ -112,6 +134,7 @@ get '/hello/:name' do
   code = "Hello #{params[:name]}!  - the time is <%= Time.now %>"
   erb code
 end
+
 
 # Index page is also an ERB view
 get '/' do
@@ -122,6 +145,5 @@ get '/' do
   else
     p "File " + filename + " not found"
   end
-
 end
 
