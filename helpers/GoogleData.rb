@@ -8,6 +8,24 @@ class GoogleData
     @rptID = Parse.get_int(params[:rptID] , 0)
     @usrID = Parse.get_int(params[:userID], 0)
     @orgID = Parse.get_int(params[:orgID] , 0)
+	 
+	 # tqx=version:0.6;reqId:1;sig:5277771;out:json; responseHandler:myQueryHandler
+	 @tqx   = Parse.get_string(params[:tqx], "")
+	 @reqId   = '1'
+	 @version = '0.6'
+	 if ( @tqx.length > 0 )
+	   pairs = @tqx.split(";")
+		pairs.each do |pair|
+		  p = pair.split(":",2) 
+		  if ( p.length == 2)
+		    if p[0] == 'version'
+			   @version = p[1]
+			 elsif p[0] == 'reqId'
+			   @reqId = p[1]
+			 end
+		  end
+		end
+	 end
     
     @col_types = Array.new
     @spec_map  = { :userID => @usrID, :orgID => @orgID }
@@ -23,7 +41,7 @@ class GoogleData
   end
 
   def error_result(reason_str)
-    "{status:'error',errors[{reason:'#{reason_str}'}]}"
+    "{version:'#{@version}', reqId:#{@reqId}, status:'error',errors[{reason:'#{reason_str}'}]}"
   end
   
   # https://developers.google.com/chart/interactive/docs/reference#dataparam
@@ -97,7 +115,7 @@ class GoogleData
   
   def table_result(rs)
     return error_result('invalid_request') if rs.nil?
-    resp = "{version:'0.6',status:'ok',"
+    resp = "{version:'#{@version}', reqId:#{@reqId}, status:'ok',"
     resp +=  "table:{" + col_info(rs) + "," + row_info(rs) + "}" 
     resp += "}"
   end
@@ -131,7 +149,7 @@ class GoogleData
 
       end
     end
-    
+    	 
     jsResp
   end
   

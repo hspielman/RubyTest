@@ -1,15 +1,156 @@
-<!DOCTYPE html>
-<head>
-<meta charset="utf-8">
-<title>DB Reports</title>
-</head>
 <%
-   id = Parse.get_int(params[:id], 0)
-   
+   id   = Parse.get_int(params[:id], 0)
+	exec = Parse.get_string(params[:submit], "" ) 
+
    dbr = DBReport.get_by_id(id)
    user_parms = Array.new
    sql_stmt   = ""
+
+	csvURL   = "execDBReport.htm?id=#{id}"	      # "dbReportExecCSV.jsp?id=#{id}"	
+	gdataURL = "/GoogleData?rptID=#{id}&orgID=34&userID=3" 	
+
+   spec_map = { :userID => "3" , :orgID => "32" }
+   dbr.parse_statement
+	seq       = 0
+   parm_arr  = dbr.parm_arr
+	parm_arr.each do |dbrParam|
+	  if ! dbrParam.mapped? 
+		 seq += 1 
+		 pseq = "p#{seq}"
+		 pval = Parse.get_string(params[pseq.to_sym], "") 
+		 user_parms.push(pval)	
+		 csvURL += "&#{pseq}=#{pval}"		
+	  end
+   end
+							    
+	chart     = dbr.type 
+	showChart = !(chart == 'none')
+	
+	googleChartType = '' 
+	googlePackage   = "corechart" 
+	numAxis         = "vAxis" 
+	
+	if ( chart == 'line' )
+	  googleChartType = "LineChart" 
+	  
+	elsif ( chart == 'column' )
+	  googleChartType = "ColumnChart" 
+	  
+	elsif ( chart == 'bar' )
+	  googleChartType = "BarChart" 
+	  numAxis         = "hAxis" 
+	
+	elsif ( chart == 'pie' )
+	  googleChartType = "PieChart" 
+	  
+	elsif ( chart == 'table' )
+	  googleChartType = "Table" 
+	  googlePackage   = "table" 
+	  
+	end
+
 %>
+<!DOCTYPE html>
+<head>
+<meta charset="utf-8">
+<title>DB Reports (<%= googleChartType %>)</title>
+<script type="text/javascript" src="jquery-1.8.3.min.js"></script>
+
+<% if ( googleChartType.length > 0 ) %>
+	  
+<script type="text/javascript" src="https://www.google.com/jsapi"></script>
+
+<script type="text/javascript">
+
+      // Load the Visualization API and the piechart package.
+      google.load('visualization', '1.0', {'packages':['<%= googlePackage %>']});
+		
+
+      // Set a callback to run when the Google Visualization API is loaded.
+      // google.setOnLoadCallback(makeRequest);  // (drawChart)
+
+/*
+   https://developers.google.com/chart/interactive/docs/customizing_charts
+   https://google-developers.appspot.com/chart/interactive/docs/gallery/linechart
+   https://google-developers.appspot.com/chart/interactive/docs/gallery/piechart	
+	
+   chartStats.draw (dataStats,
+					  {width: 500, height: 340 ,
+                 title: 'Toppings I Like On My Pizza',
+					  axisTitlesPosition: 'none',
+					  backgroundColor: '#EEEEEE', 
+					  chartArea: {top:10, left:30, width:450, height:300 } ,
+					  colors: ['#CC3333', '#3333CC','#33CC33'] ,
+					  curveType: 'function',           // only works for LineChart...
+					  focusTarget: 'category',
+					  legend: {position: 'top', textStyle: {color: '#333333', fontSize: 14}} ,
+					  hAxis: { textStyle: {color: '#669'}, minValue:      1, maxValue: maxWeek },
+					  vAxis: { textStyle: {color: '#669'}, minValue: minVal, maxValue: maxVal  },		
+					  gridlineColor: '#CCC', 
+					  lineWidth: 3,
+					  pointSize: 6,
+					  tooltipTextStyle: {fontSize:11, color:'#666666' } 
+					 } );	
+
+*/
+
+		function handleQueryResponse(response) 
+		{		
+		  if (response.isError()) 
+		  {
+			  alert('Error in query: ' + response.getMessage() + ' ' + response.getDetailedMessage());
+			  return;
+		  }
+
+		  if ( response.hasWarning() )
+		  {
+			  var warnings = response.getReasons() ;
+			  alert ( "Query Failed: " + warnings[0] + " : " + response.getDetailedMessage() ) ;
+			  return ;
+		  }
+
+		  var data  = response.getDataTable();
+		  var chart = new google.visualization.<%= googleChartType %>(document.getElementById('chart_div'));
+		  chart.draw(data, 
+		             {width: 900, height: 600, 
+					     <%= numAxis %>: { minValue: 1} ,
+						  title: "<%= dbr.name %>",
+						  titleTextStyle: {color: '#3366CC', fontSize: 18},
+						  alternatingRowStyle: true,
+						  is3D: true}
+						);
+		}
+		
+		function makeRequest() 
+		{
+		  // Replace the data source URL on next line with your data source URL.
+		  // Specify that we want to use the XmlHttpRequest object to make the query.
+		  var opts = {sendMethod: 'xhr'};
+		  var qURL = '<%= gdataURL %>' ;
+		  var pSeq = 1 ;
+		  while (true)
+		  {
+			  var ref = document.getElementById("p" + pSeq) ;
+			  if ( ref == null )
+			    break ;
+			  var pval = ref.value ;
+			  qURL += "&p" + pSeq + "=" + pval ;
+			  pSeq++ ;  
+		  }
+		  		  
+		  var query = new google.visualization.Query(qURL, opts);
+		  
+		  // Optional request to return only column C and the sum of column B, grouped by C members.
+		  // query.setQuery('select C, sum(B) group by C');
+		  
+		  // Send the query with a callback function.
+		  query.send(handleQueryResponse);
+		}
+
+    </script>
+<%  end  %>	
+
+</head>
    
 <body>
 <%   if ( dbr == nil || dbr.id <= 0 ) %>
@@ -22,20 +163,13 @@
     <input name="id" type="hidden" value="<%= id %>" />
     <table style="min-width:480px;" border='1'>
 <%	  
-      spec_map = { :userID => "3" , :orgID => "23" }
-      dbr.parse_statement
-      parm_arr = dbr.parm_arr
-		nparms   = parm_arr.size
-		seq      = 0
-		inp      = Array.new
+		seq  = 0
 		parm_arr.each do |dbrParam|
 		  if dbrParam.mapped? 
 		    pval = dbrParam.value(spec_map)
 		  else
-          seq += 1 
-		    pseq = "p#{seq}"
-		    pval = Parse.get_string(params[pseq.to_sym], "") 
-          user_parms.push(pval)			
+		    pval = user_parms[seq]
+			 seq += 1
 		  end
 %>
         <tr> 
@@ -56,6 +190,10 @@
        <td></td>
        <td><input type="submit" name="submit" id="submit" value="Submit" /></td>
      </tr>
+     <tr>
+       <td></td>
+       <td><input type="button" id="chart" value="Chart" onClick="makeRequest();" /></td>
+     </tr>
 	  
     </table>
     </form>
@@ -64,7 +202,7 @@
 	    sql_stmt = dbr.executable_statement(user_parms) 
     end 
 
-	if ( sql_stmt.size > 0 )
+	if ( sql_stmt.size > 0 && exec == 'Submit' )
 %>
       <p><code><%= sql_stmt%></code></p> 	
 <%   
@@ -83,7 +221,12 @@
 	end
 %>
 
-
+    <!--Div that will hold the chart-->
+<br />
+    <div style="position:relative; border:1px solid #999; z-index:800;" >
+    <div id="chart_div"></div>
+    </div>
+<br />
 
 </body>
 
